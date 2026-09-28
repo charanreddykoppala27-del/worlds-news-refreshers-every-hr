@@ -1,0 +1,143 @@
+<title>Global Business Wire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: wire-desk feed — sticky filter strip, category sections of dated bullets, newest first */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --fg:#141a24; --muted:#5b6678; --line:#dde2ea;
+  --accent:#1f4fd1; --accent-soft:#e3eafb; --up:#137a4b; --down:#b3261e;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f131a; --surface:#171c25; --fg:#e7ebf2; --muted:#98a3b5; --line:#262d3a;
+  --accent:#7ea2ff; --accent-soft:#1d2946; --up:#4cc38a; --down:#ff7b72; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f131a; --surface:#171c25; --fg:#e7ebf2; --muted:#98a3b5; --line:#262d3a;
+  --accent:#7ea2ff; --accent-soft:#1d2946; --up:#4cc38a; --down:#ff7b72; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55}
+.wrap{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:28px 64px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,5vw,40px);letter-spacing:-.02em;line-height:1.05;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:6px 0 0;max-width:60ch}
+.stamp{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.stamp b{display:block;color:var(--fg);font-weight:500;font-size:13px}
+.live{display:inline-flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.08em;font-size:11px;color:var(--accent)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.live i{animation:none}}
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:2;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding-block:14px;margin-top:18px;border-bottom:1px solid var(--line)}
+.filters button{flex:none;font:500 13px var(--body);color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer}
+.filters button:hover{color:var(--fg);border-color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.filters button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.filters .n{font-family:var(--mono);font-size:11px;opacity:.75;margin-left:4px}
+section{margin-top:28px}
+h2{font-family:var(--display);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 10px;display:flex;align-items:center;gap:10px}
+h2::after{content:"";flex:1;height:1px;background:var(--line)}
+ul{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+li{display:grid;grid-template-columns:62px 1fr;gap:12px;padding:12px 16px;border-top:1px solid var(--line)}
+li:first-child{border-top:0}
+.t{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
+.x{min-width:0}
+.x p{margin:0;max-width:68ch}
+.src{font-size:12px;color:var(--muted);margin-top:3px}
+.src a{color:var(--accent);text-decoration:none}
+.src a:hover{text-decoration:underline}
+.new{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+.up{color:var(--up);font-weight:600}.down{color:var(--down);font-weight:600}
+footer{margin-top:40px;color:var(--muted);font-size:12px}
+.empty{color:var(--muted);padding:24px 0}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <span class="live"><i></i>Refreshes hourly</span>
+      <h1>Global Business Wire</h1>
+      <p class="sub">Business headlines from every industry and region, boiled down to one line each. Newest first; the last 48 hours stay on the page.</p>
+    </div>
+    <div class="stamp"><b id="updated">—</b><span id="count"></span></div>
+  </header>
+  <nav class="filters" id="filters" aria-label="Filter by industry"></nav>
+  <main id="feed"></main>
+  <footer>Summaries are written from public news reports; follow the source link for the full story. Not investment advice.</footer>
+</div>
+
+<!-- NEWS DATA: scheduled runs replace only the JSON inside this tag -->
+<script id="news-data" type="application/json">
+{
+  "updated": "2026-09-28T17:30:00-05:00",
+  "items": [
+    {"t":"2026-09-28T16:00:00-05:00","cat":"Markets & Economy","text":"US stocks fell to start the week: Dow <span class=\"down\">−0.7%</span> to 51,481.51, S&P 500 <span class=\"down\">−0.8%</span> to 7,683.69, Nasdaq <span class=\"down\">−0.9%</span> to 26,820.38.","src":"CNBC","url":"https://www.cnbc.com/2026/09/27/stock-market-today-live-updates.html"},
+    {"t":"2026-09-28T13:00:00-05:00","cat":"Markets & Economy","text":"The US–Iran standoff pushed Brent crude back to around $106; the 10-year Treasury yield hit a nearly two-decade high and traders raised bets on an October Fed rate hike.","src":"Bloomberg","url":"https://www.bloomberg.com/news/articles/2026-09-27/stock-market-today-dow-s-p-live-updates"},
+    {"t":"2026-09-28T12:00:00-05:00","cat":"Markets & Economy","text":"Fed Governor Lisa Cook said AI may eventually lower inflation but won't stop the price pressures that led the Fed to raise rates. PCE inflation (Wed), manufacturing (Thu) and the September jobs report (Fri) are due this week.","src":"CNBC","url":"https://www.cnbc.com/2026/09/27/stock-market-today-live-updates.html"},
+    {"t":"2026-09-28T03:00:00-05:00","cat":"Markets & Economy","text":"The US and China said they agreed to a $30 billion reciprocal tariff reduction and to open a bilateral dialogue on AI.","src":"Newsquawk","url":"https://www.newsquawk.com/headlines/newsquawk-daily-european-equity-opening-news---28th-september-2026"},
+    {"t":"2026-09-28T04:00:00-05:00","cat":"Global Markets","text":"Asia fell on higher oil: South Korea's Kospi <span class=\"down\">−2.7%</span>, China's CSI 300 <span class=\"down\">−2.2%</span>, Japan's Nikkei <span class=\"down\">−0.7%</span>; Hong Kong's Hang Seng edged up.","src":"CNBC","url":"https://www.cnbc.com/2026/09/27/stock-market-today-live-updates.html"},
+    {"t":"2026-09-28T03:30:00-05:00","cat":"Global Markets","text":"UK housebuilders jumped at the open (Taylor Wimpey <span class=\"up\">+23%</span>, Vistry <span class=\"up\">+20%</span>) after the Labour government announced a scheme for first-time buyers.","src":"CNBC","url":"https://www.cnbc.com/2026/09/27/stock-market-today-live-updates.html"},
+    {"t":"2026-09-28T00:30:00-05:00","cat":"Global Markets","text":"Australia: Northern Star Resources rejected an unsolicited $38 billion takeover offer from a South African rival; the Reserve Bank is widely expected to raise rates to 4.6% on Tuesday.","src":"ABC News (AU)","url":"https://www.abc.net.au/news/2026-09-28/asx-markets-business-live-news-september-28/107201818"},
+    {"t":"2026-09-28T08:00:00-05:00","cat":"Tech & AI","text":"Nvidia shares rose after the company approved a record $150 billion stock buyback, even as the wider tech sector slid.","src":"Daily Market Brief","url":"https://premarketbrief.substack.com/p/daily-market-brief-september-28-2026"},
+    {"t":"2026-09-28T12:30:00-05:00","cat":"Tech & AI","text":"AMD became the first woman-led company worth $1 trillion.","src":"Fortune","url":"https://fortune.com/"},
+    {"t":"2026-09-26T10:00:00-05:00","cat":"Tech & AI","text":"A US jury ordered Apple to pay Taction more than $5.7 billion over haptic-technology patents; Apple denies infringing and plans to appeal.","src":"Newsquawk / Reuters","url":"https://www.newsquawk.com/headlines/newsquawk-daily-european-equity-opening-news---28th-september-2026"},
+    {"t":"2026-09-28T09:00:00-05:00","cat":"Tech & AI","text":"China is reportedly tightening travel limits on AI researchers and chip engineers, treating them as strategic national assets.","src":"Tech Startups","url":"https://techstartups.com/2026/09/28/top-tech-news-today-september-28-2026-citrix-microsoft-nvidia-openai-samsung-spacex-more/"},
+    {"t":"2026-09-28T07:00:00-05:00","cat":"Tech & AI","text":"Micron reports fiscal Q4 results Wednesday, a key read on AI chip demand.","src":"Saxo","url":"https://www.home.saxo/en-ch/content/articles/macro/asia-market-quick-take-28-september-2026-28092026"},
+    {"t":"2026-09-28T14:00:00-05:00","cat":"Industrials & Autos","text":"Boeing fell about <span class=\"down\">6%</span> to a 2026 low after reports the FAA is delaying certification of the 737 Max 10 over a navigation software issue.","src":"TheStreet","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-sept-28-2026"},
+    {"t":"2026-09-27T12:00:00-05:00","cat":"Industrials & Autos","text":"President Trump is set to announce plans for a $15 billion steel plant, which would be the largest in the US.","src":"CNBC","url":"https://www.cnbc.com/technology/"},
+    {"t":"2026-09-28T14:30:00-05:00","cat":"Media & Entertainment","text":"Paramount Skydance rose <span class=\"up\">3.8%</span> after announcing $44.4 billion in secured notes to help fund its purchase of Warner Bros. Discovery.","src":"TheStreet","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-sept-28-2026"},
+    {"t":"2026-09-28T14:15:00-05:00","cat":"Healthcare & Pharma","text":"Kodiak Sciences soared about <span class=\"up\">155%</span> on positive Phase 3 results for two wet macular degeneration treatments.","src":"TheStreet","url":"https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-sept-28-2026"},
+    {"t":"2026-09-28T07:30:00-05:00","cat":"Retail & Fashion","text":"Shein reports its first earnings as a public company; the stock is down roughly 28% since listing amid slowing demand and rising costs.","src":"FashionNetwork / Saxo","url":"https://us.fashionnetwork.com/"},
+    {"t":"2026-09-27T09:00:00-05:00","cat":"Retail & Fashion","text":"Wall Street sentiment on Nike is at its lowest in at least 25 years after Bank of America turned negative on the sportswear maker.","src":"FashionNetwork","url":"https://us.fashionnetwork.com/"},
+    {"t":"2026-09-27T08:00:00-05:00","cat":"Retail & Fashion","text":"Armani's CEO said the group is open to several investors sharing the 15% stake set aside for sale in Giorgio Armani's will.","src":"FashionNetwork","url":"https://us.fashionnetwork.com/"},
+    {"t":"2026-09-28T10:00:00-05:00","cat":"Food & Beverage","text":"Wells Fargo upgraded Sweetgreen to overweight with an $11 target, up from Friday's $8.24 close.","src":"CNBC","url":"https://www.cnbc.com/2026/09/27/stock-market-today-live-updates.html"},
+    {"t":"2026-09-24T09:00:00-05:00","cat":"Food & Beverage","text":"Mars Wrigley will close its Newark, NJ candy plant in October, cutting 307 jobs; Nestlé Purina is investing about $640 million in a pet-food plant in Mantova, Italy.","src":"Powder & Bulk Solids","url":"https://www.powderbulksolids.com/food-beverage/latest-news-in-the-food-and-beverage-industry"},
+    {"t":"2026-09-24T08:30:00-05:00","cat":"Food & Beverage","text":"Hormel named president John Ghingo as CEO effective October 26.","src":"Powder & Bulk Solids","url":"https://www.powderbulksolids.com/food-beverage/latest-news-in-the-food-and-beverage-industry"},
+    {"t":"2026-09-28T11:00:00-05:00","cat":"Energy & Commodities","text":"Saudi Arabia is collecting a large oil windfall from the Iran conflict as crude stays above $100.","src":"Fortune","url":"https://fortune.com/"}
+  ]
+}
+</script>
+
+<script>
+(function(){
+  var data; try{data=JSON.parse(document.getElementById('news-data').textContent)}catch(e){data={items:[]}}
+  var items=(data.items||[]).slice().sort(function(a,b){return new Date(b.t)-new Date(a.t)});
+  var order=["Markets & Economy","Global Markets","Tech & AI","Retail & Fashion","Food & Beverage","Energy & Commodities","Industrials & Autos","Healthcare & Pharma","Finance & Deals","Media & Entertainment","Real Estate","Other"];
+  var cats=[];items.forEach(function(i){if(cats.indexOf(i.cat)<0)cats.push(i.cat)});
+  cats.sort(function(a,b){var x=order.indexOf(a),y=order.indexOf(b);return (x<0?99:x)-(y<0?99:y)});
+  var fmtT=new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'});
+  var fmtD=new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'});
+  var fmtFull=new Intl.DateTimeFormat(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+  var up=new Date(data.updated);
+  document.getElementById('updated').textContent='Updated '+(isNaN(up)?'—':fmtFull.format(up));
+  document.getElementById('count').textContent=items.length+' headlines · '+cats.length+' industries';
+  var newest=items.length?new Date(items[0].t):0;
+  var sel='All';try{sel=localStorage.getItem('bw-cat')||'All'}catch(e){}
+  if(sel!=='All'&&cats.indexOf(sel)<0)sel='All';
+  var f=document.getElementById('filters');
+  ['All'].concat(cats).forEach(function(c){
+    var b=document.createElement('button');b.type='button';b.id='f-'+c.replace(/\W+/g,'-');b.dataset.cat=c;
+    var n=c==='All'?items.length:items.filter(function(i){return i.cat===c}).length;
+    b.innerHTML=c+'<span class="n">'+n+'</span>';
+    b.onclick=function(){sel=c;try{localStorage.setItem('bw-cat',c)}catch(e){}render()};
+    f.appendChild(b);
+  });
+  function esc(s){return String(s).replace(/[&<>"]/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]})}
+  function render(){
+    [].forEach.call(f.children,function(b){b.setAttribute('aria-pressed',b.dataset.cat===sel?'true':'false')});
+    var feed=document.getElementById('feed');feed.innerHTML='';
+    if(!items.length){feed.innerHTML='<p class="empty">No headlines yet. The next hourly run will fill this page.</p>';return}
+    cats.filter(function(c){return sel==='All'||c===sel}).forEach(function(c){
+      var s=document.createElement('section');
+      var h='<h2>'+esc(c)+'</h2><ul>';
+      items.filter(function(i){return i.cat===c}).forEach(function(i){
+        var d=new Date(i.t),today=new Date();
+        var when=d.toDateString()===today.toDateString()?fmtT.format(d):fmtD.format(d);
+        var isNew=newest&&(newest-d)<3*3600*1000;
+        h+='<li><span class="t">'+when+'</span><div class="x"><p>'+i.text+(isNew?'<span class="new">new</span>':'')+'</p><div class="src"><a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.src)+'</a></div></div></li>';
+      });
+      s.innerHTML=h+'</ul>';feed.appendChild(s);
+    });
+  }
+  render();
+})();
+</script>
